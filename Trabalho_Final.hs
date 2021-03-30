@@ -10,7 +10,7 @@ type Name = String
 
 type Unifier = [(Name, Type)]
 -- solicitar 2 tipos e informar se pode ser unificado 
--- fazer Parser Term em cada termo
+-- fazer Parser em cada termo
 
 parseType :: Parser Type     -- type: function | atom
 parseAtom :: Parser Type     -- atom: int | var | paren
@@ -19,14 +19,18 @@ parseVar :: Parser Type      -- var: lowercase+ -- OK
 parseFun :: Parser Type      -- fun: atom "->" type
 parseParen :: Parser Type    -- paren: "(" type ")"
 
-parseVar :: Parser Type      -- var: lowercase+ -- OK
+parseVar :: Parser Type   
+parseVar = do
+   <- many1 lower
+  string "
+  return <- many1 lower
 
-parseFun :: Parser Type      -- fun: atom "->" type
-parseInt = do
+parseFun :: Parser Type     
+parseFun = do
   string "
   return (atom:type)
   
-parseInt :: Parser Type      -- int: "Int" -- OK
+parseInt :: Parser Type    
 parseInt = do
   string "Int"
   return TypeInt
