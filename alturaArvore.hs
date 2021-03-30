@@ -4,5 +4,3 @@ data Tree a = Leaf a
 altura :: Tree a -> Int
 altura Leaf = 0
 altura (Branch _ a b) = 1 + max (height a) (height b)
-
-
