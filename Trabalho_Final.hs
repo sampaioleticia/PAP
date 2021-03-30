@@ -14,11 +14,23 @@ type Unifier = [(Name, Type)]
 
 parseType :: Parser Type     -- type: function | atom
 parseAtom :: Parser Type     -- atom: int | var | paren
-parseInt :: Parser Type      -- int: "Int"
+parseInt :: Parser Type      -- int: "Int" -- OK
 parseVar :: Parser Type      -- var: lowercase+ -- OK
 parseFun :: Parser Type      -- fun: atom "->" type
 parseParen :: Parser Type    -- paren: "(" type ")"
 
+parseVar :: Parser Type      -- var: lowercase+ -- OK
+
+parseFun :: Parser Type      -- fun: atom "->" type
+parseInt = do
+  string "
+  return (atom:type)
+  
+parseInt :: Parser Type      -- int: "Int" -- OK
+parseInt = do
+  string "Int"
+  return TypeInt
+  
 --tem o de variavel falta o de int e arrow
 variable :: Parser Term
 variable = do
