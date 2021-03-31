@@ -101,7 +101,7 @@ occursCheck x (TypeArrow y xs) =
   else 
   occursCheck x xs
 ----------------------------------------------------------------------------------------------------------------------------------------
-compose :: Unifier -> Unifier -> Unifier -- FEITO
+compose :: Unifier -> Unifier -> Unifier 
 compose xs ys =
 -- função mapear
   xs ++ applyOnSubst xs ys
