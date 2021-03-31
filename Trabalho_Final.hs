@@ -114,16 +114,21 @@ applyOnSubst xs ys =
 
   in fmap substOnTuple ys
 ----------------------------------------------------------------------------------------------------------------------------------------
---aplica uma substituição em um termo
---função para testar o sistema (aplicar uma substituição a um tipo arbitrário retornando um novo tipo)
+-- aplica uma substituição em um termo
+-- função para testar o sistema (aplicar uma substituição a um tipo arbitrário retornando um novo tipo)
+-- ?
 subst :: Unifier -> Type -> Type
---INTEIRO
-subst 
---VARIAVEL 
+-- INTEIRO
+subst n1 == n2 = 
+  Just []
+-- VARIAVEL 
 -- substituir uma variável de tipo a se ela existir dentro da substituição
 subst xs (TypeVar a) =
   case lookup a xs of
     Just b -> b
     Nothing -> Var a
---ARROW
-subst
+-- ARROW
+subst (TypeVar x) (TypeArrow a xs) =
+case lookup TypeArrow a x == True of
+Just a -> a
+Nothing -> Arrow x
