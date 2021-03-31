@@ -1,3 +1,4 @@
+-- Trabalho Final da diciplina de PAP - Individual feito por Leticia Capitani
 -- implementar algoritimo de unificação
 import Text.ParserCombinators.Parsec
 
