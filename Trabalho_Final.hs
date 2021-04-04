@@ -1,4 +1,4 @@
--- Trabalho Final da diciplina de PAP 
+-- Trabalho Final da diciplina de PAP -- Trabalho feito por Leticia Capitani e Lucas Gesser
 -- implementar algoritimo de unificação
 import Text.ParserCombinators.Parsec
 
@@ -117,7 +117,6 @@ applyOnSubst xs ys =
 ----------------------------------------------------------------------------------------------------------------------------------------
 -- aplica uma substituição em um termo
 -- função para testar o sistema (aplicar uma substituição a um tipo arbitrário retornando um novo tipo)
--- ?
 subst :: Unifier -> Type -> Type
 -- INTEIRO
 subst n1 == n2 = 
