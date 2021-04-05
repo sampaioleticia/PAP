@@ -18,9 +18,9 @@ parseType = try parseTypeFun
          <|> parseTypeAtom
 
 parseAtom :: Parser Type     -- atom: int | var | paren
-parseAtom = try int 
-         <|> try var 
-         <|> try paren
+parseAtom = int 
+         <|> var 
+         <|> paren
 
 parseInt :: Parser Type      -- int: "Int" 
 parseInt = do
@@ -39,7 +39,7 @@ parseFun :: Parser Type      -- fun: atom "->" type
    return TypeArrow
   
 parseParen :: Parser Type    -- paren: "(" type ")"
-parseParen = between (symbol "(") (symbol ")") parseParen
+parseParen = between (symbol "(") (symbol ")") parseType
 ----------------------------------------------------------------------------------------------------------------------------------------
 -- estrutura principal
 main :: IO () 
@@ -102,7 +102,7 @@ occursCheck x (TypeArrow y xs) =
   else 
   occursCheck x xs
 ----------------------------------------------------------------------------------------------------------------------------------------
-compose :: Unifier -> Unifier -> Unifier 
+compose :: Unifier -> Unifier -> Unifier -- corrigir
 compose xs ys =
 -- função mapear
   xs ++ applyOnSubst xs ys
@@ -117,7 +117,8 @@ applyOnSubst xs ys =
 ----------------------------------------------------------------------------------------------------------------------------------------
 -- aplica uma substituição em um termo
 -- função para testar o sistema (aplicar uma substituição a um tipo arbitrário retornando um novo tipo)
-subst :: Unifier -> Type -> Type
+-- ?
+subst :: Unifier -> Type -> Type -- corrigir 
 -- INTEIRO
 subst n1 == n2 = 
   Just []
