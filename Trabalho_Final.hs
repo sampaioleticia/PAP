@@ -13,7 +13,6 @@ type Unifier = [(Name, Type)]
 -- solicitar 2 tipos e informar se pode ser unificado 
 -- fazer Parser em cada termo
 parseType :: Parser Type     -- type: function | atom
-parseType = do
 parseType = try parseTypeFun 
          <|> parseTypeAtom
 
@@ -29,17 +28,20 @@ parseInt = do
   
 parseVar :: Parser Type      -- var: lowercase+ -- OK
 parseVar = do
-    name <- parseName
-    remain <- many1 lowercase+
-    TypeVar <- parseType
-    return (Var (name TypeVar))
+    name <- many1 lowercase
+    return (TypeVar name)
     
 parseFun :: Parser Type      -- fun: atom "->" type
-   type <- atom
-   return TypeArrow
+parseFun = do
+   left <- parseAtom
+   string "->"
+   right <- parseType
+   return (TypeArrow left right)
   
 parseParen :: Parser Type    -- paren: "(" type ")"
-parseParen = between (symbol "(") (symbol ")") parseType
+parseParen =
+  between (symbol "(") (symbol ")") parseType
+
 ----------------------------------------------------------------------------------------------------------------------------------------
 -- estrutura principal
 main :: IO () 
@@ -55,6 +57,7 @@ main = do
 
   putStrLn "Unificação:"
   print $ unify term_a term_b
+
 ----------------------------------------------------------------------------------------------------------------------------------------
 -- função de unificar -- recebe dois termos e retorna um unificador mais geral forma Just mgu ou Nothing caso não de pra unificar 
 unify :: Type -> Type -> Maybe Unifier
@@ -74,17 +77,21 @@ unify (TypeVar a) b =
   else
     Just [(a, b)]
 -- pode unificar o tipo int com o tipo int retornando uma lista vazia (INT)
- unify (TypeInt n1) (TypeInt n2) | n1 == n2 = 
-   Just []
--- pode unificar as funções compondo o resultado (ARROW) - 8 linhas
-unify (TypeVar x) (TypeArrow a b) =
-  if occursCheck x (TypeArrow a b) == True then 
-  Nothing 
-  else 
-  Just [(x,a)]
--- não pode unificar 
+unify (TypeInt) (TypeInt) = 
+  Just []
+--
+unify (TypeArrow a b) (TypeArrow x y) =
+  -- Queremos verificar se (a->b) ~ (x->y)
+  -- PASSOS:
+  --   Precisamos que a~x, retornando Just t1
+  --   Precisamos que (t1)b~(t1)y, retornando Just t2
+  --   Se temos t1 e t2, retornamos um unificador com sucesso,
+  --     sendo a composição de t2 e t1
+  --   Se t1 ou t2 não existirem, não podemos unificar!
+-- Caso geral, não pode unificar
 unify _ _ =
   Nothing
+
 ----------------------------------------------------------------------------------------------------------------------------------------
 --função para verificar se uma variavel aparece livre em um tipo e que compõe duas unificações distintas
 occursCheck :: Name -> Type -> Bool
@@ -97,39 +104,55 @@ occursCheck x (TypeInt y) =
 occursCheck x (TypeVar y) =
   x == y -- Apenas se forem iguais 
 --ARROW
-occursCheck x (TypeArrow y xs) = 
-  if occursCheck x y then True 
-  else 
-  occursCheck x xs
+occursCheck x (TypeArrow a b) =
+  -- OU x aparece em a, OU x aparece em b?
+  occursCheck x a || occursCheck x b
+
 ----------------------------------------------------------------------------------------------------------------------------------------
+
 compose :: Unifier -> Unifier -> Unifier -- corrigir
 compose xs ys =
 -- função mapear
   xs ++ applyOnSubst xs ys
+
 -- aplicar subst xs em ys
 applyOnSubst :: Unifier -> Unifier -> Unifier
-
 applyOnSubst xs ys =
   let substOnTuple (name, term) =
         (name, subst xs term)
-
   in fmap substOnTuple ys
+
 ----------------------------------------------------------------------------------------------------------------------------------------
 -- aplica uma substituição em um termo
 -- função para testar o sistema (aplicar uma substituição a um tipo arbitrário retornando um novo tipo)
 -- ?
+
+--
+-- (u)int = int
+--
+-- (u)a   = b    se { ..., a |-> b, ... } em u
+--        = a    do contrário
+--
+-- (u)(e1 -> e2) = (u)e1 -> (u)e2
+--
+
 subst :: Unifier -> Type -> Type -- corrigir 
 -- INTEIRO
-subst n1 == n2 = 
-  Just []
+subst u (TypeInt) =
+  TypeInt
+
 -- VARIAVEL 
 -- substituir uma variável de tipo a se ela existir dentro da substituição
-subst xs (TypeVar a) =
-  case lookup a xs of
-    Just b -> b
-    Nothing -> Var a
+subst u (TypeVar a) =
+  case lookup a u of
+    -- { ..., a |-> b, ... } existe!
+    Just b ->
+      b
+    Nothing ->
+      -- A variável permanece a mesma!
+      TypeVar a
+
 -- ARROW
-subst (TypeVar x) (TypeArrow a xs) =
-case lookup TypeArrow a x == True of
-Just a -> a
-Nothing -> Arrow x
+subst u (TypeArrow a b) =
+  -- Distribui a chamada
+  TypeArrow (subst u a) (subst u b)
