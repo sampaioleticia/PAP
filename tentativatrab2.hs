@@ -3,7 +3,7 @@ import Text.ParserCombinators.Parsec
 data Type = TypeInt
           | TypeVar Name
           | TypeArrow Type Type
-          deriving Show
+          deriving Sho
 
 type Name = String
 
