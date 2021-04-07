@@ -28,7 +28,7 @@ parseVar = do
      name <- many1 lowercase
      return (TypeVar name)
   
-parseArrow :: Parser Type        --igual
+parseArrow :: Parser Type     
 parseArrow = do
     t1 <- parseAtom
     string "->"
