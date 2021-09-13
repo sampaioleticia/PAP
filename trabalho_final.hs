@@ -1,5 +1,5 @@
 import Text.ParserCombinators.Parsec
-//ISSO FOI EDITADO
+
 data Type = TypeInt
           | TypeVar Name
           | TypeArrow Type Type
